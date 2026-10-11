@@ -1,0 +1,67 @@
+@import "tailwindcss";
+
+:root {
+  --trace-bg: #0d111b;
+  --trace-surface: #111726;
+  --trace-panel: #131b2d;
+  --trace-panel-hover: #1a2336;
+  --trace-border: #25314a;
+  --trace-text: #f5f7fb;
+  --trace-text-secondary: #9aa4bb;
+  --trace-accent: #6f7dff;
+  --trace-selection: #ff7f61;
+}
+
+@theme inline {
+  --color-background: var(--trace-bg);
+  --color-foreground: var(--trace-text);
+  --font-sans: "Geist", "Inter", "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Geist", "Inter", "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+.trace-icon-btn {
+  @apply inline-flex h-8 w-8 items-center justify-center rounded-lg border border-transparent transition hover:bg-[var(--trace-panel-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--trace-accent)];
+}
+
+.trace-tool-btn {
+  @apply inline-flex items-center gap-1 rounded-lg border border-[var(--trace-border)] px-2.5 py-1.5 text-xs text-[var(--trace-text-secondary)] transition hover:bg-[var(--trace-panel-hover)] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--trace-accent)];
+}
+
+.trace-tool-btn-active {
+  @apply bg-[color-mix(in_oklab,var(--trace-accent)_20%,transparent)] text-white;
+}
+
+.trace-input {
+  @apply w-full rounded-xl border border-[var(--trace-border)] bg-[var(--trace-surface)] px-3 py-2 text-sm text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--trace-accent)];
+}
+
+.trace-card {
+  @apply rounded-xl border border-[var(--trace-border)] bg-[var(--trace-surface)] p-3;
+}
+
+.trace-card-title {
+  @apply mb-1 text-xs font-semibold uppercase tracking-[0.08em] text-[var(--trace-text-secondary)];
+}
+
+.trace-card-copy {
+  @apply text-sm text-white;
+}
