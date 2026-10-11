@@ -36,13 +36,11 @@ describe("workspace geometry", () => {
   it("creates normalized region with proper ordering", () => {
     const region = createNormalizedRegion({ x: 0.8, y: 0.1 }, { x: 0.3, y: 0.55 });
 
-    expect(region).toEqual({
-      type: "region",
-      x: 0.3,
-      y: 0.1,
-      width: 0.5,
-      height: 0.45,
-    });
+    expect(region.type).toBe("region");
+    expect(region.x).toBeCloseTo(0.3, 5);
+    expect(region.y).toBeCloseTo(0.1, 5);
+    expect(region.width).toBeCloseTo(0.5, 5);
+    expect(region.height).toBeCloseTo(0.45, 5);
   });
 
   it("nudges point selection within bounds", () => {

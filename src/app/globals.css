@@ -15,7 +15,7 @@
 @theme inline {
   --color-background: var(--trace-bg);
   --color-foreground: var(--trace-text);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: "Geist", "Inter", "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
 }
 
 * {
@@ -29,7 +29,7 @@ body {
 }
 
 body {
-  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  font-family: "Geist", "Inter", "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
 }
 
 button,

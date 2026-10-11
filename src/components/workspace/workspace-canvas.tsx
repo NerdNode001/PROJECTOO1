@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, type PointerEventHandler } from "react";
+import Image from "next/image";
 import { Crosshair, Hand, MousePointer2, Search, ZoomIn, ZoomOut } from "lucide-react";
 import {
   createNormalizedRegion,
@@ -35,9 +36,10 @@ const sampleSvg = `<svg xmlns='http://www.w3.org/2000/svg' width='1280' height='
 
 export function WorkspaceCanvas({ selection, setSelection, analysisState }: Props) {
   const viewportRef = useRef<HTMLDivElement | null>(null);
+  const uploadedObjectUrlRef = useRef<string | null>(null);
   const [viewport, setViewport] = useState({ width: 1, height: 1 });
-  const [assetSrc, setAssetSrc] = useState<string | null>(null);
-  const [assetName, setAssetName] = useState<string>("No asset loaded");
+  const [assetSrc, setAssetSrc] = useState<string>(`data:image/svg+xml;utf8,${encodeURIComponent(sampleSvg)}`);
+  const [assetName, setAssetName] = useState<string>("Sample fixture (demo)");
   const [assetSize, setAssetSize] = useState({ width: 1280, height: 800 });
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
@@ -47,14 +49,6 @@ export function WorkspaceCanvas({ selection, setSelection, analysisState }: Prop
   const [activePointerId, setActivePointerId] = useState<number | null>(null);
   const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(null);
   const [panStart, setPanStart] = useState<{ x: number; y: number; panX: number; panY: number } | null>(null);
-
-  useEffect(() => {
-    if (!assetSrc) {
-      setAssetSrc(`data:image/svg+xml;utf8,${encodeURIComponent(sampleSvg)}`);
-      setAssetName("Sample fixture (demo)");
-      setAssetSize({ width: 1280, height: 800 });
-    }
-  }, [assetSrc]);
 
   useEffect(() => {
     const target = viewportRef.current;
@@ -73,6 +67,15 @@ export function WorkspaceCanvas({ selection, setSelection, analysisState }: Prop
     observer.observe(target);
     return () => observer.disconnect();
   }, []);
+
+  useEffect(
+    () => () => {
+      if (uploadedObjectUrlRef.current) {
+        URL.revokeObjectURL(uploadedObjectUrlRef.current);
+      }
+    },
+    [],
+  );
 
   const mediaLayout = useMemo(
     () => getMediaLayout({ x: 0, y: 0, width: viewport.width, height: viewport.height }, assetSize, zoom, pan),
@@ -100,7 +103,11 @@ export function WorkspaceCanvas({ selection, setSelection, analysisState }: Prop
     }
 
     setUploadError(null);
+    if (uploadedObjectUrlRef.current) {
+      URL.revokeObjectURL(uploadedObjectUrlRef.current);
+    }
     const url = URL.createObjectURL(file);
+    uploadedObjectUrlRef.current = url;
     setAssetSrc(url);
     setAssetName(file.name);
     setSelection(null);
@@ -109,7 +116,7 @@ export function WorkspaceCanvas({ selection, setSelection, analysisState }: Prop
   };
 
   const handlePointerDown: PointerEventHandler<HTMLDivElement> = (event) => {
-    if (!assetSrc || activePointerId !== null) {
+    if (activePointerId !== null) {
       return;
     }
 
@@ -228,11 +235,13 @@ export function WorkspaceCanvas({ selection, setSelection, analysisState }: Prop
           }
         }}
       >
-        {assetSrc && (
-          <>
-            <img
+        <>
+          <Image
               src={assetSrc}
               alt={assetName}
+              unoptimized
+              width={assetSize.width}
+              height={assetSize.height}
               style={{
                 left: mediaLayout.mediaX,
                 top: mediaLayout.mediaY,
@@ -240,7 +249,7 @@ export function WorkspaceCanvas({ selection, setSelection, analysisState }: Prop
                 height: mediaLayout.mediaHeight,
               }}
               onLoad={(event) => {
-                const target = event.currentTarget;
+                const target = event.currentTarget as HTMLImageElement;
                 setAssetSize({ width: target.naturalWidth, height: target.naturalHeight });
               }}
               className="pointer-events-none absolute object-contain"
@@ -290,8 +299,7 @@ export function WorkspaceCanvas({ selection, setSelection, analysisState }: Prop
                 )}
               </svg>
             </div>
-          </>
-        )}
+        </>
 
         <label className="absolute left-4 top-4 rounded-xl border border-[var(--trace-border)] bg-black/40 px-3 py-2 text-xs text-[var(--trace-text-secondary)]">
           Upload image
